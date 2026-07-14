@@ -49,6 +49,7 @@ export function createEmptyMatchData() {
     date: '',
     venue: '',
     matchName: '',
+    matchGender: 'male',
     homeTeam: '',
     awayTeam: '',
     homeScore: 0,

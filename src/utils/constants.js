@@ -11,12 +11,22 @@ export const VENUES = [
   '之江足球场',
 ]
 
-// Match name dropdown options
-export const MATCH_NAMES = [
+// Match name dropdown options — 男足
+export const MATCH_NAMES_MALE = [
   '浙江大学三好杯足球赛',
   '浙江大学CC98杯足球赛',
   '浙江大学新生杯足球赛',
   '浙江大学五人制足球赛',
+  '友谊赛',
+  '热身赛',
+]
+
+// Match name dropdown options — 女足
+export const MATCH_NAMES_FEMALE = [
+  '浙江大学三好杯女子足球赛',
+  '浙江大学CC98杯女子足球赛',
+  '浙江大学新生杯女子足球赛',
+  '浙江大学五人制女子足球赛',
   '友谊赛',
   '热身赛',
 ]

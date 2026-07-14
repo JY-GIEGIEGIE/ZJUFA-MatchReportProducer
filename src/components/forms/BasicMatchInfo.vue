@@ -1,11 +1,50 @@
 <script setup>
-import { inject, ref } from 'vue'
-import { VENUES, MATCH_NAMES } from '../../utils/constants.js'
+import { inject, ref, computed } from 'vue'
+import { VENUES, MATCH_NAMES_MALE, MATCH_NAMES_FEMALE } from '../../utils/constants.js'
 
 const matchData = inject('matchData')
 
+// ---- Venue ----
 const customVenue = ref(false)
-const customMatchName = ref(false)
+const venueSelect = ref('')
+
+function handleVenueChange(e) {
+  const val = e.target.value
+  if (val === '__custom__') {
+    customVenue.value = true
+  } else {
+    matchData.venue = val
+  }
+}
+
+// ---- Match Name ----
+// Dropdown-selected template (not directly bound to matchData)
+const selectedTemplate = ref('')
+
+// Gender: 'male' | 'female' — stored on matchData for persistence
+const currentGender = computed({
+  get: () => matchData.matchGender || 'male',
+  set: (v) => { matchData.matchGender = v },
+})
+
+// Match name options based on gender
+const matchNameOptions = computed(() =>
+  currentGender.value === 'female' ? MATCH_NAMES_FEMALE : MATCH_NAMES_MALE
+)
+
+// When a template is selected from the dropdown, populate the text input
+function handleTemplateSelect(e) {
+  const val = e.target.value
+  if (!val) return // 提示行，忽略
+  selectedTemplate.value = val
+  matchData.matchName = val
+}
+
+// Allow direct editing of matchName after template is filled
+function onMatchNameInput(e) {
+  matchData.matchName = e.target.value
+  selectedTemplate.value = '' // 用户开始自由编辑后清除模板选中状态
+}
 </script>
 
 <template>
@@ -28,12 +67,12 @@ const customMatchName = ref(false)
         <template v-if="!customVenue">
           <select
             :value="matchData.venue"
-            @change="matchData.venue = $event.target.value"
+            @change="handleVenueChange"
             class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 mt-0.5 focus:outline-none focus:border-theme-blue"
           >
-            <option value="">选择场地</option>
+            <option value="" disabled>选择场地</option>
             <option v-for="v in VENUES" :key="v" :value="v">{{ v }}</option>
-            <option value="__custom__">其他...</option>
+            <option value="__custom__">其他（手动输入）...</option>
           </select>
         </template>
         <input
@@ -43,29 +82,56 @@ const customMatchName = ref(false)
           placeholder="输入场地名称"
           class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 mt-0.5 focus:outline-none focus:border-theme-blue"
         />
+        <button
+          v-if="customVenue"
+          class="text-xs text-theme-blue mt-1 hover:underline"
+          @click="customVenue = false"
+        >← 从列表选择</button>
       </div>
     </div>
 
-    <!-- Match Name -->
+    <!-- Match Name (redesigned) -->
     <div>
       <label class="text-xs text-gray-500">赛事名称</label>
-      <template v-if="!customMatchName">
-        <select
-          :value="matchData.matchName"
-          @change="matchData.matchName = $event.target.value"
-          class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 mt-0.5 focus:outline-none focus:border-theme-blue"
-        >
-          <option value="">选择赛事</option>
-          <option v-for="m in MATCH_NAMES" :key="m" :value="m">{{ m }}</option>
-          <option value="__custom__">其他...</option>
-        </select>
-      </template>
+
+      <!-- Gender toggle -->
+      <div class="flex items-center gap-3 mt-0.5 mb-1.5">
+        <label class="flex items-center gap-1 text-xs cursor-pointer">
+          <input
+            type="radio"
+            value="male"
+            v-model="currentGender"
+            class="text-theme-blue"
+          />
+          男足
+        </label>
+        <label class="flex items-center gap-1 text-xs cursor-pointer">
+          <input
+            type="radio"
+            value="female"
+            v-model="currentGender"
+            class="text-theme-blue"
+          />
+          女足
+        </label>
+      </div>
+
+      <!-- Template dropdown (quick-fill helper) -->
+      <select
+        :value="selectedTemplate"
+        @change="handleTemplateSelect"
+        class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 focus:outline-none focus:border-theme-blue"
+      >
+        <option value="" disabled>选择赛事模板（可选，快捷填充）</option>
+        <option v-for="m in matchNameOptions" :key="m" :value="m">{{ m }}</option>
+      </select>
+
+      <!-- Actual match name input (always editable, binds to matchData) -->
       <input
-        v-else
         :value="matchData.matchName"
-        @input="matchData.matchName = $event.target.value"
-        placeholder="输入赛事名称"
-        class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 mt-0.5 focus:outline-none focus:border-theme-blue"
+        @input="onMatchNameInput"
+        placeholder="赛事名称，可在此编辑补充（如添加: 半决赛、小组赛E组等）"
+        class="w-full text-xs border border-gray-300 rounded px-2 py-1.5 mt-1.5 focus:outline-none focus:border-theme-blue"
       />
     </div>
 
