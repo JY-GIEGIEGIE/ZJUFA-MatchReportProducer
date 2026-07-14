@@ -3,11 +3,10 @@ import { useStorage } from './useStorage.js'
 import { generateId } from '../utils/helpers.js'
 import { createEmptyMatchData } from '../types/schema.js'
 
-const INDEX_KEY = 'draft-index'
-
 /**
  * Multi-draft CRUD manager.
- * Coordinates with localStorage via useStorage.
+ * Each draft is stored as a separate localStorage key: zju-report-{id}
+ * The draft list is always rebuilt from the keys present in localStorage.
  *
  * @param {object} matchData - reactive match data object from useMatchData
  */
@@ -16,47 +15,47 @@ export function useDraftManager(matchData) {
 
   const drafts = ref([])
   const currentDraftId = ref(null)
-  const isDirty = ref(false)
 
   /**
-   * Refresh the draft list from localStorage index.
+   * Rebuild the draft list from localStorage.
+   * Scans ALL keys and reads each draft to build the sidebar index.
    */
   function refreshList() {
-    const index = lsLoad(INDEX_KEY)
-    if (Array.isArray(index)) {
-      drafts.value = index.sort((a, b) => b.lastModified - a.lastModified)
-    } else {
-      // Rebuild index from individual keys
-      const keys = listKeys()
-      const rebuilt = []
-      for (const key of keys) {
-        if (key === INDEX_KEY) continue
-        const json = lsLoad(key)
-        if (json) {
-          rebuilt.push({
-            id: key,
-            displayTitle: buildTitle(json),
-            lastModified: json.lastModified || 0,
-          })
-        }
+    const keys = listKeys()
+    const result = []
+    for (const key of keys) {
+      const json = lsLoad(key)
+      if (json) {
+        result.push({
+          id: key,
+          displayTitle: buildTitle(json),
+          lastModified: json.lastModified || 0,
+        })
       }
-      drafts.value = rebuilt.sort((a, b) => b.lastModified - a.lastModified)
-      lsSave(INDEX_KEY, drafts.value)
     }
+    drafts.value = result.sort((a, b) => b.lastModified - a.lastModified)
   }
 
   /**
-   * Save current matchData as a draft.
+   * Save current matchData to localStorage.
+   * Returns true if anything was saved.
    */
   function saveDraft() {
+    // Don't save completely empty drafts
+    if (!matchData.homeTeam && !matchData.awayTeam && !matchData.matchName
+      && matchData.goals.length === 0 && matchData.substitutions.length === 0
+      && matchData.cards.length === 0 && matchData.penalties.length === 0) {
+      return false
+    }
+
     if (!matchData.id) {
       matchData.id = generateId()
     }
     matchData.lastModified = Date.now()
     lsSave(matchData.id, { ...matchData })
     currentDraftId.value = matchData.id
-    isDirty.value = false
     refreshList()
+    return true
   }
 
   /**
@@ -66,14 +65,8 @@ export function useDraftManager(matchData) {
     const json = lsLoad(id)
     if (!json) return false
 
-    // Save current first if dirty
-    if (isDirty.value && currentDraftId.value) {
-      saveDraft()
-    }
-
     Object.assign(matchData, json)
     currentDraftId.value = id
-    isDirty.value = false
     return true
   }
 
@@ -89,10 +82,10 @@ export function useDraftManager(matchData) {
   }
 
   /**
-   * Start a fresh draft (save current if dirty first).
+   * Save current draft (if any content), then reset to empty.
    */
   function newDraft() {
-    if (isDirty.value) saveDraft()
+    saveDraft()
 
     // Reset to empty
     const empty = createEmptyMatchData()
@@ -100,13 +93,11 @@ export function useDraftManager(matchData) {
     matchData.id = generateId()
     matchData.lastModified = Date.now()
     currentDraftId.value = matchData.id
-    isDirty.value = false
   }
 
   return {
     drafts,
     currentDraftId,
-    isDirty,
     refreshList,
     saveDraft,
     loadDraft,

@@ -40,6 +40,16 @@ function handleNewDraft() {
   draftManager.newDraft()
 }
 
+function handleExportImage() {
+  draftManager.saveDraft()
+  exportImage()
+}
+
+function handleExportHtml() {
+  draftManager.saveDraft()
+  exportHtml()
+}
+
 function handleBatchExport() {
   draftManager.saveDraft()
   draftManager.refreshList()
@@ -108,13 +118,13 @@ onMounted(() => {
       <button
         class="px-5 py-2 bg-sub-green text-white rounded-md text-sm font-medium hover:bg-green-600 transition-colors disabled:opacity-50"
         :disabled="isExporting"
-        @click="exportImage()"
+        @click="handleExportImage()"
       >
         {{ isExporting ? '导出中...' : '生成战报' }}
       </button>
       <button
         class="px-5 py-2 border border-theme-blue text-theme-blue rounded-md text-sm font-medium hover:bg-blue-50 transition-colors"
-        @click="exportHtml()"
+        @click="handleExportHtml()"
       >
         导出 HTML
       </button>
