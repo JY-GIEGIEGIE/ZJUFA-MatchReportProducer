@@ -1,6 +1,6 @@
 <script setup>
 import { inject } from 'vue'
-import { TIME_PRESETS } from '../../utils/constants.js'
+import TimeInput from './TimeInput.vue'
 
 const props = defineProps({
   goal: { type: Object, required: true },
@@ -47,12 +47,9 @@ function remove() {
       <span class="text-gray-300">|</span>
 
       <!-- Time -->
-      <input
-        list="time-presets"
-        :value="goal.time"
-        @input="update('time', $event.target.value)"
-        placeholder="分钟"
-        class="w-16 text-xs border border-gray-300 rounded px-1.5 py-1 focus:outline-none focus:border-theme-blue"
+      <TimeInput
+        :model-value="goal.time"
+        @update:model-value="update('time', $event)"
       />
 
       <span class="text-gray-300">|</span>

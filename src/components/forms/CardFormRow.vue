@@ -1,5 +1,6 @@
 <script setup>
 import { inject } from 'vue'
+import TimeInput from './TimeInput.vue'
 
 const props = defineProps({
   card: { type: Object, required: true },
@@ -42,12 +43,9 @@ function remove() {
       </label>
       <span class="text-gray-300">|</span>
 
-      <input
-        list="time-presets"
-        :value="card.time"
-        @input="update('time', $event.target.value)"
-        placeholder="分钟"
-        class="w-16 text-xs border border-gray-300 rounded px-1.5 py-1 focus:outline-none focus:border-theme-blue"
+      <TimeInput
+        :model-value="card.time"
+        @update:model-value="update('time', $event)"
       />
       <span class="text-gray-300">|</span>
 

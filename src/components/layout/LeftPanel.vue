@@ -7,7 +7,6 @@ import SubFormRow from '../forms/SubFormRow.vue'
 import CardFormRow from '../forms/CardFormRow.vue'
 import PenaltyFormRow from '../forms/PenaltyFormRow.vue'
 import RefereeForm from '../forms/RefereeForm.vue'
-import { TIME_PRESETS } from '../../utils/constants.js'
 
 const matchData = inject('matchData')
 const actions = inject('actions')
@@ -15,11 +14,6 @@ const actions = inject('actions')
 
 <template>
   <aside class="w-[420px] shrink-0 bg-white border-r border-gray-200 overflow-y-auto">
-    <!-- Time presets datalist (shared) -->
-    <datalist id="time-presets">
-      <option v-for="t in TIME_PRESETS" :key="t" :value="t" />
-    </datalist>
-
     <div class="p-3 space-y-3">
       <!-- 1. Basic Info -->
       <BasicMatchInfo />

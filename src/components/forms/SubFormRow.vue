@@ -1,5 +1,6 @@
 <script setup>
 import { inject } from 'vue'
+import TimeInput from './TimeInput.vue'
 
 const props = defineProps({
   sub: { type: Object, required: true },
@@ -41,12 +42,9 @@ function remove() {
         客队
       </label>
       <span class="text-gray-300">|</span>
-      <input
-        list="time-presets"
-        :value="sub.time"
-        @input="update('time', $event.target.value)"
-        placeholder="分钟"
-        class="w-16 text-xs border border-gray-300 rounded px-1.5 py-1 focus:outline-none focus:border-theme-blue"
+      <TimeInput
+        :model-value="sub.time"
+        @update:model-value="update('time', $event)"
       />
       <button
         class="ml-auto text-gray-400 hover:text-sub-red transition-colors text-sm leading-none"
