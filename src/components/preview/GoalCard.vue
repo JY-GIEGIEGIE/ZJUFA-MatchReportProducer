@@ -1,5 +1,6 @@
 <script setup>
 import IconSoccerBall from '../icons/IconSoccerBall.vue'
+import IconPenaltyMissed from '../icons/IconPenaltyMissed.vue'
 
 defineProps({
   playerName: { type: String, default: '' },
@@ -8,10 +9,9 @@ defineProps({
   goalType: { type: String, default: 'regular' },
 })
 
-// Determine ball color: regular → white, own-goal → red, penalty-kick → yellow
 function ballColor(type) {
   if (type === 'own-goal') return '#e74c3c'
-  if (type === 'penalty') return '#f1c40f'
+  if (type === 'penalty' || type === 'penalty-missed') return '#f1c40f'
   return '#ffffff'
 }
 </script>
@@ -27,6 +27,7 @@ function ballColor(type) {
     <!-- Away (left-aligned): [icon] [#number] [name] -->
     <span>{{ playerName || '球员' }}</span>
     <span v-if="playerNumber" class="font-mono">#{{ playerNumber }}</span>
-    <IconSoccerBall :size="18" :color="ballColor(goalType)" />
+    <IconSoccerBall v-if="goalType !== 'penalty-missed'" :size="18" :color="ballColor(goalType)" />
+    <IconPenaltyMissed v-else :size="18" :missed="true" />
   </div>
 </template>

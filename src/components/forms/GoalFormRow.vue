@@ -61,7 +61,8 @@ function remove() {
         class="text-xs border border-gray-300 rounded px-1.5 py-1 focus:outline-none focus:border-theme-blue"
       >
         <option value="regular">常规</option>
-        <option value="penalty">点球</option>
+        <option value="penalty">点球罚进</option>
+        <option value="penalty-missed">点球罚丢</option>
         <option value="own-goal">乌龙</option>
       </select>
 
