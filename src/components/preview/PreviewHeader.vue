@@ -5,7 +5,7 @@ const matchData = inject('matchData')
 
 const dateDisplay = computed(() => {
   if (!matchData.date) return ''
-  // YYYY-MM-DD → YYMMDD format
+  // YYYY-MM-DD  format
   const d = matchData.date.replace(/-/g, '-')
   return d.length === 8 ? d.slice(2) : matchData.date
 })
