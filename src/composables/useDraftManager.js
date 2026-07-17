@@ -65,9 +65,41 @@ export function useDraftManager(matchData) {
     const json = lsLoad(id)
     if (!json) return false
 
+    // Migrate old-format data to new multi-entry format
+    migrateDraft(json)
+
     Object.assign(matchData, json)
     currentDraftId.value = id
     return true
+  }
+
+  function migrateDraft(json) {
+    // Cards: old { playerName, ... } → new { entries: [{ playerName, ..., cardType }] }
+    if (json.cards) {
+      json.cards = json.cards.map(c => {
+        if (c.entries) {
+          // Ensure per-entry cardType
+          c.entries = c.entries.map(e => ({ ...e, cardType: e.cardType || c.type || 'yellow' }))
+          return c
+        }
+        return {
+          id: c.id || generateId(),
+          time: c.time || '',
+          entries: [{ playerName: c.playerName || '', playerNumber: c.playerNumber || '', team: c.team || 'home', reason: c.reason || '', cardType: c.type || 'yellow' }],
+        }
+      })
+    }
+    // Substitutions: old { playerInName, ... } → new { entries: [{ playerInName, ... }] }
+    if (json.substitutions) {
+      json.substitutions = json.substitutions.map(s => {
+        if (s.entries) return s
+        return {
+          id: s.id || generateId(),
+          time: s.time || '',
+          entries: [{ playerInName: s.playerInName || '', playerInNumber: s.playerInNumber || '', playerOutName: s.playerOutName || '', playerOutNumber: s.playerOutNumber || '', team: s.team || 'home' }],
+        }
+      })
+    }
   }
 
   /**

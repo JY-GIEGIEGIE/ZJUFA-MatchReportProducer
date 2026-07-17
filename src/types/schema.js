@@ -9,25 +9,35 @@
  */
 
 /**
- * @typedef {Object} SubstitutionEvent
- * @property {string} id
+ * @typedef {Object} SubstitutionEntry
  * @property {string} playerInName
  * @property {string} playerInNumber
  * @property {string} playerOutName
  * @property {string} playerOutNumber
- * @property {string} time
  * @property {'home'|'away'} team
+ */
+
+/**
+ * @typedef {Object} SubstitutionEvent
+ * @property {string} id
+ * @property {string} time
+ * @property {SubstitutionEntry[]} entries  - one or more in/out pairs
+ */
+
+/**
+ * @typedef {Object} CardEntry
+ * @property {string} playerName
+ * @property {string} playerNumber
+ * @property {'home'|'away'} team
+ * @property {string} reason
  */
 
 /**
  * @typedef {Object} CardEvent
  * @property {string} id
- * @property {string} playerName
- * @property {string} playerNumber
  * @property {string} time
  * @property {'yellow'|'red'} type
- * @property {string} reason
- * @property {'home'|'away'} team
+ * @property {CardEntry[]} entries  - one or more players
  */
 
 /**

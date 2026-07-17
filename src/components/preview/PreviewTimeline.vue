@@ -52,18 +52,12 @@ const penaltyEvents = computed(() =>
             />
             <SubstitutionCard
               v-else-if="event.type === 'substitution'"
-              :player-in-name="event.playerInName"
-              :player-in-number="event.playerInNumber"
-              :player-out-name="event.playerOutName"
-              :player-out-number="event.playerOutNumber"
+              :entries="event.entries"
               :team="event.team"
             />
             <CardDisplay
               v-else-if="event.type === 'card'"
-              :player-name="event.playerName"
-              :player-number="event.playerNumber"
-              :card-type="event.cardType"
-              :reason="event.reason"
+              :entries="event.entries"
               :team="event.team"
             />
             <!-- Connection line -->
@@ -73,6 +67,39 @@ const penaltyEvents = computed(() =>
             <TimelineNode type="event" :time="event.time" />
           </div>
           <div></div>
+        </template>
+
+        <!-- BOTH: home card left, node center, away card right -->
+        <template v-else-if="event.team === 'both'">
+          <div class="flex items-center justify-end gap-2 py-1">
+            <SubstitutionCard
+              v-if="event.type === 'substitution'"
+              :entries="event.homeEntries"
+              team="home"
+            />
+            <CardDisplay
+              v-else-if="event.type === 'card'"
+              :entries="event.homeEntries"
+              team="home"
+            />
+            <div class="connection-line"></div>
+          </div>
+          <div class="relative z-10 flex justify-center">
+            <TimelineNode type="event" :time="event.time" />
+          </div>
+          <div class="flex items-center justify-start gap-2 py-1">
+            <div class="connection-line"></div>
+            <SubstitutionCard
+              v-if="event.type === 'substitution'"
+              :entries="event.awayEntries"
+              team="away"
+            />
+            <CardDisplay
+              v-else-if="event.type === 'card'"
+              :entries="event.awayEntries"
+              team="away"
+            />
+          </div>
         </template>
 
         <!-- AWAY event: empty left, node center, card right -->
@@ -94,18 +121,12 @@ const penaltyEvents = computed(() =>
             />
             <SubstitutionCard
               v-else-if="event.type === 'substitution'"
-              :player-in-name="event.playerInName"
-              :player-in-number="event.playerInNumber"
-              :player-out-name="event.playerOutName"
-              :player-out-number="event.playerOutNumber"
+              :entries="event.entries"
               :team="event.team"
             />
             <CardDisplay
               v-else-if="event.type === 'card'"
-              :player-name="event.playerName"
-              :player-number="event.playerNumber"
-              :card-type="event.cardType"
-              :reason="event.reason"
+              :entries="event.entries"
               :team="event.team"
             />
           </div>

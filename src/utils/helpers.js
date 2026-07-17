@@ -64,34 +64,53 @@ export function buildTimeline(goals, substitutions, cards, penalties) {
     })
   }
 
-  // Map substitutions
+  // Map substitutions (multi-entry)
   for (const s of (substitutions || [])) {
-    entries.push({
-      id: s.id,
-      type: 'substitution',
-      time: s.time,
-      sortKey: parseTimeToSortKey(s.time),
-      team: s.team,
-      playerInName: s.playerInName,
-      playerInNumber: s.playerInNumber,
-      playerOutName: s.playerOutName,
-      playerOutNumber: s.playerOutNumber,
-    })
+    const homeEntries = (s.entries || []).filter(e => e.team === 'home')
+    const awayEntries = (s.entries || []).filter(e => e.team === 'away')
+    const sk = parseTimeToSortKey(s.time)
+
+    if (homeEntries.length > 0 && awayEntries.length > 0) {
+      // Both teams in one event → single row, cards on both sides
+      entries.push({
+        id: s.id, type: 'substitution', time: s.time, sortKey: sk,
+        team: 'both', homeEntries, awayEntries,
+      })
+    } else if (homeEntries.length > 0) {
+      entries.push({
+        id: s.id + '-home', type: 'substitution', time: s.time, sortKey: sk,
+        team: 'home', entries: homeEntries,
+      })
+    } else if (awayEntries.length > 0) {
+      entries.push({
+        id: s.id + '-away', type: 'substitution', time: s.time, sortKey: sk,
+        team: 'away', entries: awayEntries,
+      })
+    }
   }
 
-  // Map cards
+  // Map cards (multi-entry, type per entry)
   for (const c of (cards || [])) {
-    entries.push({
-      id: c.id,
-      type: 'card',
-      time: c.time,
-      sortKey: parseTimeToSortKey(c.time),
-      team: c.team,
-      playerName: c.playerName,
-      playerNumber: c.playerNumber,
-      cardType: c.type,
-      reason: c.reason,
-    })
+    const homeEntries = (c.entries || []).filter(e => e.team === 'home')
+    const awayEntries = (c.entries || []).filter(e => e.team === 'away')
+    const sk = parseTimeToSortKey(c.time)
+
+    if (homeEntries.length > 0 && awayEntries.length > 0) {
+      entries.push({
+        id: c.id, type: 'card', time: c.time, sortKey: sk,
+        team: 'both', homeEntries, awayEntries,
+      })
+    } else if (homeEntries.length > 0) {
+      entries.push({
+        id: c.id + '-home', type: 'card', time: c.time, sortKey: sk,
+        team: 'home', entries: homeEntries,
+      })
+    } else if (awayEntries.length > 0) {
+      entries.push({
+        id: c.id + '-away', type: 'card', time: c.time, sortKey: sk,
+        team: 'away', entries: awayEntries,
+      })
+    }
   }
 
   // Sort by numeric key first, then by insertion order among same-time events

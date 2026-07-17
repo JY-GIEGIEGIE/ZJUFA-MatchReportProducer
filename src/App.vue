@@ -14,8 +14,8 @@ const {
   loadData,
   touch,
   addGoal, removeGoal, updateGoal,
-  addSubstitution, removeSubstitution, updateSubstitution,
-  addCard, removeCard, updateCard,
+  addSubstitution, addSubstitutionEntry, removeSubstitution, removeSubstitutionEntry, updateSubstitution,
+  addCard, addCardEntry, removeCard, removeCardEntry, updateCard,
   addPenalty, removePenalty, updatePenalty,
 } = useMatchData()
 
@@ -68,8 +68,8 @@ provide('timelineEvents', timelineEvents)
 provide('draftManager', draftManager)
 provide('actions', {
   addGoal, removeGoal, updateGoal,
-  addSubstitution, removeSubstitution, updateSubstitution,
-  addCard, removeCard, updateCard,
+  addSubstitution, addSubstitutionEntry, removeSubstitution, removeSubstitutionEntry, updateSubstitution,
+  addCard, addCardEntry, removeCard, removeCardEntry, updateCard,
   addPenalty, removePenalty, updatePenalty,
   resetData, loadData, touch,
 })
